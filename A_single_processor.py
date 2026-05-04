@@ -3,6 +3,8 @@ from collections import deque
 from time import time
 import sqlite3
 import json
+import database
+from wrappers import timer_func
 #------------------------#
 #-----Configurations-----#
 #------------------------#
@@ -15,37 +17,6 @@ WS_P            = 0.1       # Watts-Strogatz: rewiring probability
 ER_P            = 0.1       # Bipartite: edge probability
 
 DP_PATH         = "results.db" # Database path for storing results
-
-#------------------#
-#-----DB setup-----#
-#------------------#
-def init_db(path:str) -> sqlite3.Connection:
-    con = sqlite3.connect(path)
-    con.execute('''
-    CREATE TABLE IF NOT EXISTS bfs_runs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        graph_type TEXT NOT NULL,
-        n INTEGER NOT NULL,
-        edge_count INTEGER NOT NULL,
-        parms_json TEXT NOT NULL,
-        run_index INTEGER NOT NULL,
-        elapsed REAL NOT NULL,
-        timestamp DATETIME DEFAULT (datetime('now')))
-''')
-    con.commit()
-    return con
-
-
-#-------------------------#
-#-----Timer decorator-----#
-#-------------------------#
-def timer_func(func):
-    def wrap_func(*args, **kwargs):
-        start_time = time()
-        result = func(*args, **kwargs)
-        end_time = time()
-        return result, end_time - start_time
-    return wrap_func
 
 #-------------#
 #-----BFS-----#
@@ -124,12 +95,24 @@ def print_summary(con: sqlite3.Connection):
 #-------------------------#
 #-----Run experiments-----#
 #-------------------------#
-con = init_db(DP_PATH)
+database_table_columns = {
+    "id": "INTEGER PRIMARY KEY AUTOINCREMENT",
+    "graph_type": "TEXT NOT NULL",
+    "n": "INTEGER NOT NULL",
+    "edge_count": "INTEGER NOT NULL",
+    "parms_json": "TEXT NOT NULL",
+    "run_index": "INTEGER NOT NULL",
+    "elapsed": "REAL NOT NULL",
+    "timestamp": "DATETIME DEFAULT (datetime('now'))"
+}
+con = database.init_db(DP_PATH, "bfs_runs", database_table_columns)
+
 N = NUMBER_OF_NODES
 
-for nodes in [1_024, 2_048, 4_096, 8_192, 16_384, 32_768, 65_536]:
-    benchmark(con, "Barbasi-Albert", nx.barabasi_albert_graph, n=nodes, m=BA_M)
-    benchmark(con, "Watts-Strogatz", nx.watts_strogatz_graph, n=nodes, k=WS_K, p=WS_P)
+for nodes in [i for i in range(10, 17)]: # 1024 to 65536
+    #benchmark(con, "Barbasi-Albert", nx.barabasi_albert_graph, n=nodes, m=BA_M)
+    #benchmark(con, "Watts-Strogatz", nx.watts_strogatz_graph, n=nodes, k=WS_K, p=WS_P)
+    benchmark(con, "Balanced Tree", nx.balanced_tree, r=2, h=nodes)
 
 print_summary(con)
 con.close()
