@@ -69,10 +69,11 @@ if __name__ == "__main__":
     h = 4 # height of the tree
     graph = SharedMemoryParallelBFS(r, h)
     n = graph.n
-    iterations = 5000
+    iterations = 1000
 
     avg_time, dist, n = iterator(iterations)
 
+    print(f"Graph with {n} nodes (r={r}, h={h})")
     print(f"Average time of {iterations} iterations: {avg_time:.6f} seconds")
 
     # print("Node  Distance")
