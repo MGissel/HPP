@@ -8,26 +8,31 @@ import json
 import time
 
 
-def plot_results(numba_results, JIT_results, parallel_JIT_results):
+def plot_results(numba_results, JIT_results, parallel_JIT_results, threading_results):
 
     heights = [res[0] for res in numba_results]
     numba_times = [res[1] for res in numba_results]
     JIT_times = [res[1] for res in JIT_results]
     parallel_JIT_times = [res[1] for res in parallel_JIT_results]
+    threading_times = [res[1] for res in threading_results]
 
     for i in range(2):
         plt.figure(figsize=(10, 6))
         plt.plot(heights, numba_times, label='Shared Memory Parallel BFS (Numba)', marker='o')
         plt.plot(heights, JIT_times, label='BFS with JIT', marker='o')
         plt.plot(heights, parallel_JIT_times, label='Parallel BFS with JIT', marker='o')
+        plt.plot(heights, threading_times, label='Parallel Threading BFS', marker='o')
         plt.xlabel('Height of the Tree')
-        plt.ylabel('Average Time (seconds)')
         plt.title('Performance Comparison of BFS Implementations')
-        if i == 0:
-            plt.yscale('log')
         plt.legend()
         plt.grid()
-        plt.savefig('graphs/bfs_comparison.png')
+        if i == 0:
+            plt.ylabel('Average Time (seconds, log scale)')
+            plt.yscale('log')
+            plt.savefig('graphs/bfs_comparison_log.png')
+        else:
+            plt.ylabel('Average Time (seconds)')
+            plt.savefig('graphs/bfs_comparison.png')
         plt.show()
 
 def main(r, iterations, h_max):
@@ -66,16 +71,16 @@ def main(r, iterations, h_max):
 
 
         # parallel by Threading BFS #####################
-        # print(f"Running Parallel Threading BFS for tree height {i}...")
-        #time_avg_parallel_threading = iterator_threading(G, iterations)
-        #threading_results.append((i, float(time_avg_parallel_threading)))
+        print(f"Running Parallel Threading BFS for tree height {i}...")
+        time_avg_parallel_threading = iterator_threading(G, iterations)
+        threading_results.append((i, float(time_avg_parallel_threading)))
         #################################################
     
     return {
         'numba_results': numba_results,
         'JIT_results': JIT_results,
         'parallel_JIT_results': parallel_JIT_results,
-        #'threading_results': threading_results
+        'threading_results': threading_results
     }
 
 def export(results, filename):
@@ -91,7 +96,7 @@ if __name__ == "__main__":
 
     r = 2 # branching factor (childs per node)
     iterations = 30
-    h_max = 15
+    h_max = 21
 
     results = main(r, iterations, h_max)
 
@@ -102,4 +107,4 @@ if __name__ == "__main__":
     # print(f"parallel_JIT_results: {results['parallel_JIT_results']}")
     # print(f"threading_results: {results['threading_results']}")
 
-    plot_results(results['numba_results'], results['JIT_results'], results['parallel_JIT_results'])
+    plot_results(results['numba_results'], results['JIT_results'], results['parallel_JIT_results'], results['threading_results'])

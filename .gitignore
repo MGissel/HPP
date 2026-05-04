@@ -1,6 +1,9 @@
-# data-file formats
-.json
-.csv
+# ignoring data-file formats including json, csv, and excel files
+*.json
+*.csv
+*.xlsx
+*.xls
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
