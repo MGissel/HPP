@@ -43,7 +43,7 @@ ax.set_title("BFS scaling — average ± min/max band")
 ax.legend()
 ax.grid(True, which="both", alpha=0.3)
 plt.tight_layout()
-plt.savefig("plot_scaling.png", dpi=300)
+plt.savefig("graphs/plot_scaling.png", dpi=300)
 plt.show()
 
 # ── Plot 2: Box plot of run distribution per n ────────────────
@@ -61,7 +61,7 @@ for ax, gt in zip(axes, graph_types):
 axes[0].set_ylabel("BFS time (s)")
 plt.suptitle("BFS run distribution per node count")
 plt.tight_layout()
-plt.savefig("plot_boxplot.png", dpi=300)
+plt.savefig("graphs/plot_boxplot.png", dpi=300)
 plt.show()
 
 # ── Plot 3: Slowdown factor vs theoretical O(n) ───────────────
@@ -80,7 +80,7 @@ ax.set_title("Empirical scaling factor vs theoretical O(n)")
 ax.legend()
 ax.grid(True, which="both", alpha=0.3)
 plt.tight_layout()
-plt.savefig("plot_slowdown.png", dpi=300)
+plt.savefig("graphs/plot_slowdown.png", dpi=300)
 plt.show()
 
 # ── Plot 4: BFS time vs V+E ───────────────────────────────────
@@ -104,5 +104,5 @@ ax.set_title("BFS time vs V+E — confirming O(V+E) complexity")
 ax.legend()
 ax.grid(True, which="both", alpha=0.3)
 plt.tight_layout()
-plt.savefig("plot_ve.png", dpi=300)
+plt.savefig("graphs/plot_ve.png", dpi=300)
 plt.show()
