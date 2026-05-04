@@ -8,6 +8,11 @@ import networkx as nx
 from numba import vectorize, int32
 import time
 
+# Vectorized function to check if a neighbor is unvisited
+@vectorize([int32(int32, int32)], nopython=True)
+def is_unvisited(neighbour, dist_of_neighbour):
+    return 1 if dist_of_neighbour == -1 else 0
+
 class Graph:
     def __init__(self, r, h):
         self.G = nx.balanced_tree(r, h)
@@ -24,35 +29,39 @@ class Graph:
 class SharedMemoryParallelBFS(Graph):
     def __init__(self, r, h):
         super().__init__(r, h)
-        
-    @vectorize([int32(int32, int32)], nopython=True)
-    def is_unvisited(neighbour, dist_of_neighbour):
-        return 1 if dist_of_neighbour == -1 else 0
 
-    # Breadth-First Search (BFS) algorithm 
+    # Breadth-First Search (BFS) algorithm
     def parallel_bfs(self):
         dist = np.full(self.n, -1, dtype=np.int32)
         dist[self.source] = 0
         frontier = [self.source]
 
         while frontier:
-            next_frontier = []
+            current_level = dist[frontier[0]]
 
+            candidate_neighbors = []
             for u in frontier:
-                nbrs = np.array(self.adj[u], dtype=np.int32)
-                mask = self.is_unvisited(nbrs, dist[nbrs])
+                candidate_neighbors.extend(self.adj[u])
 
-                for i, v in enumerate(nbrs):
-                    if mask[i] and dist[v] == -1:
-                        dist[v] = dist[u] + 1
-                        next_frontier.append(v)
+            if not candidate_neighbors:
+                break
 
-            frontier = next_frontier
+            nbrs = np.array(candidate_neighbors, dtype=np.int32)
+            mask = is_unvisited(nbrs, dist[nbrs]).astype(bool)
+
+            next_frontier = np.unique(nbrs[mask])
+            next_frontier = next_frontier[dist[next_frontier] == -1]
+
+            if next_frontier.size == 0:
+                break
+
+            dist[next_frontier] = current_level + 1
+            frontier = next_frontier.tolist()
 
         return dist
 
 # Helper function to run multiple iterations and calculate average time taken for BFS
-def iterator(iterations):
+def iterator(graph, iterations):
     times = []
     for _ in range(iterations):
         time_start = time.time()
@@ -61,7 +70,7 @@ def iterator(iterations):
 
         times.append(time_end - time_start)
 
-    return sum(times) / len(times), dist, n
+    return sum(times) / len(times), dist, graph.n
     
 if __name__ == "__main__":
 
@@ -71,7 +80,7 @@ if __name__ == "__main__":
     n = graph.n
     iterations = 1000
 
-    avg_time, dist, n = iterator(iterations)
+    avg_time, dist, n = iterator(graph, iterations)
 
     print(f"Graph with {n} nodes (r={r}, h={h})")
     print(f"Average time of {iterations} iterations: {avg_time:.6f} seconds")
