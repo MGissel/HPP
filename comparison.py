@@ -69,7 +69,15 @@ if __name__ == "__main__":
         time_avg_parallel_threading = iterator_threading(G, iterations)
         C_dist_mem_results.append((i, float(time_avg_parallel_threading)))
 
-
+    # save reasults to json file
+    import json
+    with open('results/bfs_comparison_results.json', 'w') as f:
+        json.dump({
+            'numba_results': numba_results,
+            'JIT_results': JIT_results,
+            'parallel_JIT_results': parallel_JIT_results,
+            'C_dist_mem_results': C_dist_mem_results
+        }, f, indent=4)
     
     print(f"numba_results: {numba_results} \n")
     print(f"JIT_results: {JIT_results} \n")
