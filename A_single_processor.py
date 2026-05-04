@@ -5,6 +5,8 @@ import sqlite3
 import json
 import database
 from wrappers import timer_func
+from dataclasses import dataclass, field
+
 #------------------------#
 #-----Configurations-----#
 #------------------------#
@@ -71,6 +73,7 @@ def benchmark(con: sqlite3.Connection, name: str, graph_fn, runs=RUNS, **graph_k
 
     avg = sum(times) / len(times)
     print(f"\nAverage: {avg:.4f}s  Min: {min(times):.4f}s  Max: {max(times):.4f}s  Total: {sum(times):.4f}s")
+    return avg
 
 #-----------------------#
 #-----Summary query-----#
@@ -108,11 +111,12 @@ database_table_columns = {
 con = database.init_db(DP_PATH, "bfs_runs", database_table_columns)
 
 N = NUMBER_OF_NODES
-
+averages = {}
 for nodes in [i for i in range(10, 17)]: # 1024 to 65536
     #benchmark(con, "Barbasi-Albert", nx.barabasi_albert_graph, n=nodes, m=BA_M)
     #benchmark(con, "Watts-Strogatz", nx.watts_strogatz_graph, n=nodes, k=WS_K, p=WS_P)
-    benchmark(con, "Balanced Tree", nx.balanced_tree, r=2, h=nodes)
+    avg = benchmark(con, "Balanced Tree", nx.balanced_tree, r=2, h=nodes)
+    averages[nodes] = avg
 
 print_summary(con)
 con.close()
