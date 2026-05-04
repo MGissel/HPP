@@ -1,4 +1,4 @@
-from numba import jit
+from numba import jit, prange
 import networkx as nx
 import time
 import numpy as np
@@ -21,8 +21,7 @@ def graph_to_csr(G):
     )
     return offsets, neighbors_flat
 
-
-@jit(nopython=True)
+@jit(nopython=True, parallel=True)
 def BFS(offsets, neighbors_flat, source, n):
     distance = np.full(n, -1, dtype=np.int32)
     distance[source] = 0
@@ -39,7 +38,7 @@ def BFS(offsets, neighbors_flat, source, n):
 
         next_frontier = np.zeros(n, dtype=np.bool_)
 
-        for i in range(len(frontier_nodes)):        # plain for loop
+        for i in prange(len(frontier_nodes)):       # parallel loop
             node = frontier_nodes[i]
             for j in range(offsets[node], offsets[node + 1]):
                 neighbor = neighbors_flat[j]
@@ -52,9 +51,8 @@ def BFS(offsets, neighbors_flat, source, n):
 
     return distance
 
-
 if __name__ == "__main__":
-    G = tree(2, 4)
+    G = tree(2, 16)
     n = G.number_of_nodes()
     source = 0
 
@@ -64,9 +62,9 @@ if __name__ == "__main__":
     _ = BFS(offsets, neighbors_flat, source, n)
 
 
-    time_avg = np.zeros(1000)
+    time_avg = np.zeros(100)
 
-    for i in range(1000):
+    for i in range(100):
         time_start = time.time()
         distance = BFS(offsets, neighbors_flat, source, n)
         time_end = time.time()
