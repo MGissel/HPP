@@ -52,16 +52,16 @@ def BFS(offsets, neighbors_flat, source, n):
 
     return distance
 
-def iterator(n, graph):
+def iterator(graph, iterations):
     graph = graph
     n = graph.number_of_nodes()
     source = 0
-    offsets, neighbors_flat = graph_to_csr(G)
+    offsets, neighbors_flat = graph_to_csr(graph)
     _ = BFS(offsets, neighbors_flat, source, n)
 
-    time_arr = np.zeros(n)
+    time_arr = np.zeros(iterations)
 
-    for i in range(n):
+    for i in range(iterations):
         time_start = time.time()
         distance = BFS(offsets, neighbors_flat, source, n)
         time_end = time.time()
@@ -73,5 +73,5 @@ def iterator(n, graph):
 if __name__ == "__main__":
     G = tree(3, 5)
     n = G.number_of_nodes()
-    time_avg = iterator(n, G)
+    time_avg = iterator(G, 30)
     print(f"Average BFS time: {time_avg:.6f} seconds")

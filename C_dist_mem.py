@@ -26,6 +26,7 @@ mpirun -n 4 python C_dist_mem.py
 import networkx as nx
 import numpy as np
 from mpi4py import MPI
+import sys
 
 class Graph:
     def __init__(self, r, h):
@@ -117,9 +118,17 @@ def iterator(graph, iterations):
 
 
 if __name__ == "__main__":
-
+    
+    r = int(sys.argv[1])
+    h = int(sys.argv[2])
+    graph = DistributedMemoryParallelBFS(r, h)
+    avg_time, dist, n = iterator(graph, iterations=1)
+    if graph.rank == 0:
+        print(avg_time)
+    
+    """
     r = 2 # branching factor (childs per node)
-    h = 20 # height of the tree
+    h = 10 # height of the tree
     graph = DistributedMemoryParallelBFS(r, h)
     iterations = 1
 
@@ -129,6 +138,7 @@ if __name__ == "__main__":
         print(f"MPI ranks: {graph.size}")
         print(f"Graph with {n} nodes (r={r}, h={h})")
         print(f"Average time of {iterations} iterations: {avg_time:.6f} seconds")
+    """
 
     # print("Node  Distance")
     # for u in range(n):
