@@ -46,7 +46,8 @@ if __name__ == "__main__":
     distance[0] = 0 # Set the distance to the source node to 0
     visited[0] = True # Mark the source node as visited
 
+    
     time_start = time.time() # Start the timer
     parallel_BFS(graph)
     time_end = time.time() # End the timer
-    #print(f"Total time taken: {time_end - time_start} seconds")
+    print(f"Total time taken: {time_end - time_start} seconds")
