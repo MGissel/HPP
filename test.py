@@ -22,3 +22,7 @@ def graph_to_csr(G):
 g = tree(2, 4)
 offsets, neighbors_flat = graph_to_csr(g)
 print(offsets, neighbors_flat)
+bools = np.array([0]*g.number_of_nodes(), dtype=np.uint8)
+print(len(bools))
+packed = np.packbits(bools)
+print(packed)
