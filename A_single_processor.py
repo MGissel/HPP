@@ -120,3 +120,6 @@ for nodes in [i for i in range(10, 17)]: # 1024 to 65536
 
 print_summary(con)
 con.close()
+
+def iterator():
+    return averages
