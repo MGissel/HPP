@@ -8,58 +8,72 @@ import networkx as nx
 from numba import vectorize, int32
 import time
 
-G = nx.balanced_tree(r=2, h=7)
-n = G.number_of_nodes()
+class Graph:
+    def __init__(self, r, h):
+        self.G = nx.balanced_tree(r, h)
+        self.source = 0
+        self.n = self.G.number_of_nodes()
+        self.adj = {u: [] for u in range(self.n)}
+        self.adjacency_list()
+  
+    def adjacency_list(self):
+        for u, v in self.G.edges():
+            self.adj[u].append(v)
+            self.adj[v].append(u)
 
-# Build adjacency list from edges
-adj = {u: [] for u in range(n)}
-for u, v in G.edges():
-    adj[u].append(v)
-    adj[v].append(u) 
+class SharedMemoryParallelBFS(Graph):
+    def __init__(self, r, h):
+        super().__init__(r, h)
+        
+    @vectorize([int32(int32, int32)], nopython=True)
+    def is_unvisited(neighbour, dist_of_neighbour):
+        return 1 if dist_of_neighbour == -1 else 0
 
-# Numba vectorized unvisited check
-@vectorize([int32(int32, int32)], nopython=True)
-def is_unvisited(neighbour, dist_of_neighbour):
-    return 1 if dist_of_neighbour == -1 else 0
+    # Breadth-First Search (BFS) algorithm 
+    def parallel_bfs(self):
+        dist = np.full(self.n, -1, dtype=np.int32)
+        dist[self.source] = 0
+        frontier = [self.source]
 
-# Breadth-First Search (BFS) algorithm 
-def parallel_bfs(adj, source, n):
-    dist = np.full(n, -1, dtype=np.int32)
-    dist[source] = 0
-    frontier = [source]
+        while frontier:
+            next_frontier = []
 
-    while frontier:
-        next_frontier = []
+            for u in frontier:
+                nbrs = np.array(self.adj[u], dtype=np.int32)
+                mask = self.is_unvisited(nbrs, dist[nbrs])
 
-        for u in frontier:
-            nbrs = np.array(adj[u], dtype=np.int32)
-            mask = is_unvisited(nbrs, dist[nbrs])
+                for i, v in enumerate(nbrs):
+                    if mask[i] and dist[v] == -1:
+                        dist[v] = dist[u] + 1
+                        next_frontier.append(v)
 
-            for i, v in enumerate(nbrs):
-                if mask[i] and dist[v] == -1:
-                    dist[v] = dist[u] + 1
-                    next_frontier.append(v)
+            frontier = next_frontier
 
-        frontier = next_frontier
+        return dist
 
-    return dist
-
+# Helper function to run multiple iterations and calculate average time taken for BFS
 def iterator(iterations):
     times = []
     for _ in range(iterations):
         time_start = time.time()
-        dist = parallel_bfs(adj, source=0, n=n)
+        dist = graph.parallel_bfs()
         time_end = time.time()
 
         times.append(time_end - time_start)
 
-    return sum(times) / len(times), dist
+    return sum(times) / len(times), dist, n
     
 if __name__ == "__main__":
-    iterations = 100
-    avg_time, dist = iterator(iterations)
 
-    print(f"Average time of {iterations} iterations: {avg_time:.4f} seconds")
+    r = 2 # branching factor (childs per node)
+    h = 4 # height of the tree
+    graph = SharedMemoryParallelBFS(r, h)
+    n = graph.n
+    iterations = 5000
+
+    avg_time, dist, n = iterator(iterations)
+
+    print(f"Average time of {iterations} iterations: {avg_time:.6f} seconds")
 
     # print("Node  Distance")
     # for u in range(n):
