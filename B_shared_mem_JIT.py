@@ -52,54 +52,26 @@ def BFS(offsets, neighbors_flat, source, n):
 
     return distance
 
-'''
-@jit(nopython=True, parallel=True)
-def BFS(offsets, neighbors_flat, source, n):
-    distance = np.full(n, -1, dtype=np.int32)
-    distance[source] = 0
-
-    frontier = np.zeros(n, dtype=np.bool_)
-    frontier[source] = True
-
-    current_level = 0
-
-    while True:
-        frontier_nodes = np.where(frontier)[0]
-        if len(frontier_nodes) == 0:
-            break
-
-        next_frontier = np.zeros(n, dtype=np.bool_)
-
-        for i in prange(len(frontier_nodes)):       # parallel loop
-            node = frontier_nodes[i]
-            for j in range(offsets[node], offsets[node + 1]):
-                neighbor = neighbors_flat[j]
-                if distance[neighbor] == -1:
-                    distance[neighbor] = current_level + 1
-                    next_frontier[neighbor] = True
-
-        frontier = next_frontier
-        current_level += 1
-
-    return distance
-'''
-if __name__ == "__main__":
-    G = tree(2, 16)
-    n = G.number_of_nodes()
+def iterator(n, graph):
+    graph = graph
+    n = graph.number_of_nodes()
     source = 0
-
     offsets, neighbors_flat = graph_to_csr(G)
-
-    print("Warming up JIT...")
     _ = BFS(offsets, neighbors_flat, source, n)
 
+    time_arr = np.zeros(n)
 
-    time_avg = np.zeros(100)
-
-    for i in range(100):
+    for i in range(n):
         time_start = time.time()
         distance = BFS(offsets, neighbors_flat, source, n)
         time_end = time.time()
-        time_avg[i] = time_end - time_start
+        time_arr[i] = time_end - time_start
+    time_avg = np.mean(time_arr)
 
-    print(f"\nAverage time (excluding warmup): {np.mean(time_avg):.8f} seconds")
+    return time_avg
+
+if __name__ == "__main__":
+    G = tree(3, 5)
+    n = G.number_of_nodes()
+    time_avg = iterator(n, G)
+    print(f"Average BFS time: {time_avg:.6f} seconds")

@@ -51,23 +51,23 @@ def BFS(offsets, neighbors_flat, source, n):
 
     return distance
 
-if __name__ == "__main__":
-    G = tree(2, 16)
-    n = G.number_of_nodes()
+def iterator(n, graph):
+    graph = graph
+    n = graph.number_of_nodes()
     source = 0
-
     offsets, neighbors_flat = graph_to_csr(G)
-
-    print("Warming up JIT...")
     _ = BFS(offsets, neighbors_flat, source, n)
 
+    time_arr = np.zeros(n)
 
-    time_avg = np.zeros(100)
-
-    for i in range(100):
+    for i in range(n):
         time_start = time.time()
         distance = BFS(offsets, neighbors_flat, source, n)
         time_end = time.time()
-        time_avg[i] = time_end - time_start
+        time_arr[i] = time_end - time_start
+    time_avg = np.mean(time_arr)
 
-    print(f"\nAverage time (excluding warmup): {np.mean(time_avg):.8f} seconds")
+    return time_avg
+
+
+
