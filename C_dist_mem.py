@@ -115,12 +115,13 @@ def iterator(graph, iterations):
 
     return None, None, graph.n
 
+
 if __name__ == "__main__":
 
     r = 2 # branching factor (childs per node)
-    h = 15 # height of the tree
+    h = 20 # height of the tree
     graph = DistributedMemoryParallelBFS(r, h)
-    iterations = 1000
+    iterations = 1
 
     avg_time, dist, n = iterator(graph, iterations)
 

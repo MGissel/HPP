@@ -72,4 +72,4 @@ if __name__ == "__main__":
         time_end = time.time()
         time_avg[i] = time_end - time_start
 
-    print(f"\nAverage time (excluding warmup): {np.mean(time_avg):.6f} seconds")
+    print(f"\nAverage time (excluding warmup): {np.mean(time_avg):.8f} seconds")
