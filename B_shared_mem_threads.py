@@ -38,16 +38,24 @@ def parallel_BFS(graph):
         print(f"Completed level {current_level}")
         current_level += 1 # Increment the current level after processing all nodes in the current frontier
 
-if __name__ == "__main__":
-    graph=tree(2, 4)
-    distance = {v: float('inf') for v in graph.nodes} # Initialize distances to infinity
-    visited = {v: False for v in graph.nodes} # Initialize visited status to False
-    frontier = [0] # Initialize the frontier with the source node
-    distance[0] = 0 # Set the distance to the source node to 0
-    visited[0] = True # Mark the source node as visited
+def iterator(graph, iterations):
+    graph=graph
 
-    
-    time_start = time.time() # Start the timer
-    parallel_BFS(graph)
-    time_end = time.time() # End the timer
-    print(f"Total time taken: {time_end - time_start} seconds")
+    timer_array = np.zeros(iterations) # Initialize an array to store the time taken for each iteration
+
+    for i in range(iterations):
+        distance = {v: float('inf') for v in graph.nodes} # Initialize distances to infinity
+        visited = {v: False for v in graph.nodes} # Initialize visited status to False
+        frontier = [0] # Initialize the frontier with the source node
+        distance[0] = 0 # Set the distance to the source node to 0
+        visited[0] = True # Mark the source node as visited
+
+        
+        time_start = time.time() # Start the timer
+        parallel_BFS(graph)
+        time_end = time.time() # End the timer
+        timer_array[i] = time_end - time_start # Store the time taken for this iteration
+
+    return np.mean(timer_array) # Return the average time taken across all iterations
+
+
