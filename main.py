@@ -11,15 +11,19 @@ for each height it will run the bfs algorithm for a specified number of iteratio
 to get an average time taken for each implementation.
 
 Usage:
+
 - Ensure all necessary modules and dependencies are installed: 
-    - matplotlib==3.10.8
-    - networkx==3.6.1
-    - numba==0.64.0
-    - numpy==2.4.3
+    matplotlib==3.10.9
+    mpi4py==4.1.1
+    networkx==3.6.1
+    numba==0.64.0
+    numpy==2.4.4
+
 - define the parameters: 
       r             (branching factor), 
       iterations    (number of runs for averaging),
-      h_max         (the tests will run on tree heights from 1 to >h_max).
+      h_max         (the tests will run on tree heights from 1 to >h_max),
+      p             (number of processes. Only for multi-process BFS).
 - Run this script to execute the performance comparison and generate results and graphs.
 """
 
@@ -27,4 +31,5 @@ if __name__ == "__main__":
     r = 2
     h_max = 15
     iterations = 30
-    main(r, iterations, h_max)
+    p = 4 # number of processes (only for multi-process BFS)
+    main(r, iterations, h_max, p)

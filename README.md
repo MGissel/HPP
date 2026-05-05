@@ -2,32 +2,19 @@ This is our High Performance Programming Mini Project
 
 Hyg med det!
 
+# USAGE
 
+USE the main.py
+It runs a comparison on the different algorithms, of both part A, B and C. 
+it compares both sequential, different approaches of shared memory paralleilism, and multi process distributed memeory approach.
 
+Just download the dependencies found in: requirements.txt
+And fill in the variables of main.py
+r:              spreading factor of balanced tree
+iterations:     The number of iterations, that it will average the answer over, done for all tree heights
+h_max:          the maximum tree depth (it will test for all tree depths up until this)
+p:              Number of processors to be used at multi processing (part C)
 
-HOW TO USE C-dist_mem.py.
-This is a shared memory parallel machine, and must be run with seperate runtime than pythons own.
-We Use MPI4PY
+It will ouptut two graphs and save them. both is the same comparison between the different methods, but one hase the y-axis scaled logarithmically.
+the data is also saved to a .json format with timestamp.
 
-## Setup
-
-Before running the script, ensure you have the required dependencies installed:
-
-```bash
-sudo apt install libopenmpi-dev openmpi-bin
-pip install mpi4py
-```
-
-## Running C_dist_mem.py
-
-Execute the script using:
-
-```bash
-mpirun -n 4 python3 C_dist_mem.py
-```
-
-### Parameters
-
-- **`-n 4`**: Specifies the number of processes to spawn. The `4` is the process count and can be varied based on your system's CPU cores or requirements.
-
-You can adjust the number to match your hardware capabilities or testing needs (e.g., `-n 2`, `-n 8`, etc.).
