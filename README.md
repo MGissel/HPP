@@ -4,11 +4,14 @@ Hyg med det!
 
 # USAGE
 
-USE the main.py
+
+USE: main.py
 It runs a comparison on the different algorithms, of both part A, B and C. 
 it compares both sequential, different approaches of shared memory paralleilism, and multi process distributed memeory approach.
 
 Just download the dependencies found in: requirements.txt
+command: pip install -r requirements.txt
+
 And fill in the variables of main.py
 r:              spreading factor of balanced tree
 iterations:     The number of iterations, that it will average the answer over, done for all tree heights

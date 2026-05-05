@@ -92,7 +92,7 @@ def data_bringer(r, iterations, h_max, p):
 
         
         print(f"Running Multi-Process BFS for tree height {i}...")
-        val = subprocess.check_output(["mpirun", "-np", str(p), "python3", "mpi.py", "--r", str(r), "--h", str(i), "--runs", str(iterations)]).decode('utf-8').strip()
+        val = subprocess.check_output(["mpirun", "-np", str(p), "python3", "Part_C/mpi.py", "--r", str(r), "--h", str(i), "--runs", str(iterations)]).decode('utf-8').strip()
         multi_process_results.append((i, float(val)))
     
     return {
@@ -136,6 +136,6 @@ if __name__ == "__main__":
     h_max = 10
     p = 4 # number of processes for multi-process BFS
 
-    main(r, iterations, h_max)
+    main(r, iterations, h_max, p)
 
     
