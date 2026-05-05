@@ -2,7 +2,7 @@ from B_shared_mem_parallel_Numba import SharedMemoryParallelBFS, iterator
 from B_shared_mem_JIT import iterator as iterator_jit
 from B_share_mem_parallel_JIT import iterator as iterator_parallel_jit
 from B_shared_mem_threads import iterator as iterator_threading
-import A_single_processor
+from A_single_processor import iterator as iterator_sequential
 
 import matplotlib.pyplot as plt
 import json
@@ -33,10 +33,10 @@ def plot_results(numba_results, JIT_results, parallel_JIT_results, threading_res
         if i == 0:
             plt.ylabel('Average Time (seconds, log scale)')
             plt.yscale('log')
-            plt.savefig('graphs/bfs_comparison_log1.png')
+            plt.savefig('bfs_comparison_log1.png')
         else:
             plt.ylabel('Average Time (seconds)')
-            plt.savefig('graphs/bfs_comparison1.png')
+            plt.savefig('bfs_comparison1.png')
         plt.show()
 
 def data_bringer(r, iterations, h_max):
@@ -80,7 +80,7 @@ def data_bringer(r, iterations, h_max):
 
         # Sequential BFS ################################
         print(f"Running Sequential BFS for tree height {i}...")
-        time_avg_sequential = A_single_processor.iterator(G, iterations)
+        time_avg_sequential = iterator_sequential(G, iterations)
         sequential_results.append((i, float(time_avg_sequential)))
         #################################################
     
@@ -102,7 +102,7 @@ def export(results, filename):
 
 def main(r, iterations, h_max):
     results = data_bringer(r, iterations, h_max)
-    export(results, 'results/bfs_comparison_results')
+    export(results, 'bfs_comparison_results')
 
     # print(f"numba_results: {results['numba_results']} \n")
     # print(f"JIT_results: {results['JIT_results']} \n")

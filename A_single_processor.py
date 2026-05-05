@@ -1,6 +1,5 @@
 import networkx as nx
 from collections import deque
-from time import time
 from wrappers import timer_func
 
 #-------------#
@@ -30,5 +29,5 @@ def iterator(G, iterations):
     for i in range(iterations):
         distance, elapsed = BFS(G, start=0)
         total_time += elapsed
-        print(f"Iteration {i+1}/{iterations} completed in {elapsed:.4f} seconds.")
+        # print(f"Iteration {i+1}/{iterations} completed in {elapsed:.4f} seconds.")
     return total_time / iterations
