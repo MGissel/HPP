@@ -1,0 +1,5 @@
+matplotlib==3.10.9
+mpi4py==4.1.1
+networkx==3.6.1
+numba==0.64.0
+numpy==2.4.4

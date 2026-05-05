@@ -1,8 +1,8 @@
-from B_shared_mem_parallel_Numba import SharedMemoryParallelBFS, iterator
-from B_shared_mem_JIT import iterator as iterator_jit
-from B_share_mem_parallel_JIT import iterator as iterator_parallel_jit
-from B_shared_mem_threads import iterator as iterator_threading
-from A_single_processor import iterator as iterator_sequential
+from Part_B.B_shared_mem_parallel_Numba import SharedMemoryParallelBFS, iterator
+from Part_B.B_shared_mem_JIT import iterator as iterator_jit
+from Part_B.B_share_mem_parallel_JIT import iterator as iterator_parallel_jit
+from Part_B.B_shared_mem_threads import iterator as iterator_threading
+from Part_A.A_single_processor import iterator as iterator_sequential
 
 import matplotlib.pyplot as plt
 import json

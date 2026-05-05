@@ -1,6 +1,6 @@
 import networkx as nx
 from collections import deque
-from wrappers import timer_func
+from Part_A.wrappers import timer_func
 
 #-------------#
 #-----BFS-----#
