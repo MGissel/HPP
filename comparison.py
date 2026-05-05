@@ -39,12 +39,13 @@ def plot_results(numba_results, JIT_results, parallel_JIT_results, threading_res
             plt.savefig('graphs/bfs_comparison1.png')
         plt.show()
 
-def main(r, iterations, h_max):
+def data_bringer(r, iterations, h_max):
 
     numba_results = []
     JIT_results = []
     parallel_JIT_results = []
     threading_results = []
+    sequential_results = []
     for i in range(1, h_max):
     
         h = i # height of the tree
@@ -76,22 +77,43 @@ def main(r, iterations, h_max):
         time_avg_parallel_threading = iterator_threading(G, iterations)
         threading_results.append((i, float(time_avg_parallel_threading)))
         #################################################
+
+        # Sequential BFS ################################
+        print(f"Running Sequential BFS for tree height {i}...")
+        time_avg_sequential = A_single_processor.iterator(G, iterations)
+        sequential_results.append((i, float(time_avg_sequential)))
+        #################################################
     
     return {
         'numba_results': numba_results,
         'JIT_results': JIT_results,
         'parallel_JIT_results': parallel_JIT_results,
-        'threading_results': threading_results
+        'threading_results': threading_results,
+        'sequential_results': sequential_results
     }
 
-def export(results, results_sequential, filename):
+def export(results, filename):
     # check if file exists, if not create it
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     with open(filename + f"_{timestamp}.json" , 'w') as f:
         json.dump({
-            'results': results, 
-            'Sequential Results': results_sequential
+            'results': results
         }, f, indent=4)
+
+def main(r, iterations, h_max):
+    results = data_bringer(r, iterations, h_max)
+    export(results, 'results/bfs_comparison_results')
+
+    # print(f"numba_results: {results['numba_results']} \n")
+    # print(f"JIT_results: {results['JIT_results']} \n")
+    # print(f"parallel_JIT_results: {results['parallel_JIT_results']}")
+    # print(f"threading_results: {results['threading_results']}")
+    # print(f"sequential_results: {results['sequential_results']}")
+    plot_results(results['numba_results'], 
+                 results['JIT_results'], 
+                 results['parallel_JIT_results'], 
+                 results['threading_results'], 
+                 results['sequential_results'])
         
 
 if __name__ == "__main__":
@@ -100,17 +122,6 @@ if __name__ == "__main__":
     iterations = 30
     h_max = 10
 
-    results = main(r, iterations, h_max)
-    results_sequential = A_single_processor.iterator()
-    export(results, results_sequential, 'results/bfs_comparison_results')
+    main(r, iterations, h_max)
 
-    # print(f"numba_results: {results['numba_results']} \n")
-    # print(f"JIT_results: {results['JIT_results']} \n")
-    # print(f"parallel_JIT_results: {results['parallel_JIT_results']}")
-    # print(f"threading_results: {results['threading_results']}")
-
-    plot_results(results['numba_results'], 
-                 results['JIT_results'], 
-                 results['parallel_JIT_results'], 
-                 results['threading_results'], 
-                 results_sequential)
+    
