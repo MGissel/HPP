@@ -2,6 +2,13 @@ from mpi4py import MPI
 import numpy as np
 import networkx as nx
 import time
+import argparse
+
+argparse = argparse.ArgumentParser(description="MPI BFS")
+argparse.add_argument("--r", type=int, default=2, help="Branching factor of the tree")
+argparse.add_argument("--h", type=int, default=5, help="Height of the tree")
+argparse.add_argument("--runs", type=int, default=1, help="Number of BFS runs to average over")
+args = argparse.parse_args()
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()  # What process am I?
@@ -70,15 +77,14 @@ def bfs_mpi(offsets, neighbors_flat, n, source=0):
         level += 1
     return distance
 
-if __name__ == "__main__":
-    G = make_graph(r=2, h=17)
-    n = G.number_of_nodes()
-    offsets, neighbors_flat = graph_to_csr(G)
+def iterator(graph, runs):
+    offsets, neighbors_flat = graph_to_csr(graph)
+    n = graph.number_of_nodes()
 
+    # Warmup
     bfs_mpi(offsets, neighbors_flat, n)
     
-
-    runs = 1
+    
     comm.Barrier()
     t0 = time.perf_counter()
     for _ in range(runs):
@@ -86,6 +92,11 @@ if __name__ == "__main__":
     comm.Barrier()
     t1 = time.perf_counter()
     
+    avg_ms = (t1 - t0) / runs
+    return avg_ms
+        
+if __name__ == "__main__":
+    G = make_graph(r=args.r, h=args.h)
+    avg_time = iterator(G, runs=args.runs)
     if rank == 0:
-        avg_ms = (t1 - t0) / runs * 1000
-        print(f"Processes: {size}  |  avg time: {avg_ms:.3f} ms  |  max distance: {dist.max()}")
+        print(f"{avg_time:.8f}")
