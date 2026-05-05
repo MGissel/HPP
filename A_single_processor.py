@@ -45,7 +45,7 @@ def BFS(graph, start):
 #--------------------------#
 #-----Graph generation-----#
 #--------------------------#
-def generate_graph(graph_type: function, **kwargs):
+def generate_graph(graph_type, **kwargs):
     return graph_type(**kwargs)
 
 #--------------------------#
@@ -111,12 +111,12 @@ database_table_columns = {
 con = database.init_db(DP_PATH, "bfs_runs", database_table_columns)
 
 N = NUMBER_OF_NODES
-averages = {}
-for nodes in [i for i in range(10, 17)]: # 1024 to 65536
+averages = []
+for nodes in [i for i in range(1, 17)]: # 1024 to 65536
     #benchmark(con, "Barbasi-Albert", nx.barabasi_albert_graph, n=nodes, m=BA_M)
     #benchmark(con, "Watts-Strogatz", nx.watts_strogatz_graph, n=nodes, k=WS_K, p=WS_P)
     avg = benchmark(con, "Balanced Tree", nx.balanced_tree, r=2, h=nodes)
-    averages[nodes] = avg
+    averages.append((nodes, avg))
 
 print_summary(con)
 con.close()
