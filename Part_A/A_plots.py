@@ -19,7 +19,7 @@ for graph_type, n, edge_count, elapsed in rows:
     data[graph_type][n]["edges"] = edge_count
 
 graph_types = sorted(data.keys())
-colors      = {"Barbasi-Albert": "#E8593C", "Watts-Strogatz": "#1D9E75"}
+colors      = {"Barbasi-Albert": "#E8593C", "Watts-Strogatz": "#1D9E75", "Balanced Tree": "#3B82F6"}
 
 # ── Plot 1: Average time vs n (log-log) ───────────────────────
 fig, ax = plt.subplots(figsize=(8, 5))

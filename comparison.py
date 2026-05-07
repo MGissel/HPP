@@ -57,7 +57,7 @@ def data_bringer(r, iterations, h_max, p):
         h = i # height of the tree
 
         print(f"Creating graph, with {(2**i)-1} nodes...")
-        graph = SharedMemoryParallelBFS(r, h)
+        graph = SharedMemoryParallelBFS(r, h, binary=True)
         G = graph.G
 
         # NUMBA BFS #####################################

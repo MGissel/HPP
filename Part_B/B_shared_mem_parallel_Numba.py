@@ -14,8 +14,13 @@ def is_unvisited(neighbour, dist_of_neighbour):
     return 1 if dist_of_neighbour == -1 else 0
 
 class Graph:
-    def __init__(self, r, h):
-        self.G = nx.balanced_tree(r, h)
+    def __init__(self, r, h, binary=False):
+        if binary:
+            self.G = nx.balanced_tree(r, h)
+        else:
+            # For Barabási–Albert, ensure n > m (number of nodes > edges to attach)
+            n = max(r + 1, (2**h)-1 if (2**h)-1 > 0 else 1)
+            self.G = nx.barabasi_albert_graph(n=n, m=r)
         self.source = 0
         self.n = self.G.number_of_nodes()
         self.adj = {u: [] for u in range(self.n)}
@@ -27,8 +32,8 @@ class Graph:
             self.adj[v].append(u)
 
 class SharedMemoryParallelBFS(Graph):
-    def __init__(self, r, h):
-        super().__init__(r, h)
+    def __init__(self, r, h, binary=False):
+        super().__init__(r, h, binary)
 
     # Breadth-First Search (BFS) algorithm
     def parallel_bfs(self):
