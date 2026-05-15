@@ -29,7 +29,7 @@ Usage:
 
 if __name__ == "__main__":
     r = 2
-    h_max = 20
+    h_max = 21
     iterations = 30
-    p = 4 # number of processes (only for multi-process BFS)
+    p = 15 # number of processes (only for multi-process BFS)
     main(r, iterations, h_max, p)
